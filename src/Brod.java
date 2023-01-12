@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Brod {
+public abstract class Brod {
 
     protected String naziv;
     protected String vrstaBroda;
@@ -70,6 +70,9 @@ public class Brod {
         throw new GIndeks();
     }
 
+    public abstract char vrsta();
+
+
     public Mornar getNajgoriMornar() {
         najgoriMornar(posada);
         return najgoriMornar;
@@ -77,6 +80,10 @@ public class Brod {
 
     private void racunajKvalitetPosade(){
         int rezultat = 0;
+        if(posada.size() == 0){
+            prosecanKvalitetPosade = 0;
+            return;
+        }
         for (int i = 0; i < this.posada.size(); i++) {
             rezultat += posada.get(i).getKvalitet();
         }
@@ -89,11 +96,27 @@ public class Brod {
         return prosecanKvalitetPosade;
     }
 
-    public void ukloniMornara(Mornar mornar){
-        posada.remove(mornar);
-        koJeKapetan(posada);
+    public void isprazniBrod(){
+        while(posada.size() > 0){
+            posada.remove(0);
+        }
     }
-    public void napadni(Brod brod){
 
+    public boolean izbrisiMornara(Mornar mornar){
+        posada.remove(mornar);
+        return true;
     }
+
+    public void napadni(Brod b) throws GIndeks {
+        if(uslovNapada(b)) {
+            if(prosecanKvalitetPosade > b.prosecanKvalitetPosade) {
+                obracunajSe(b);
+                b.isprazniBrod(); }
+            else if(b.prosecanKvalitetPosade>prosecanKvalitetPosade) {
+                b.obracunajSe(this);
+                isprazniBrod(); } }
+    }
+
+    protected abstract boolean uslovNapada(Brod b);
+    protected abstract void obracunajSe(Brod b) throws GIndeks;
 }
